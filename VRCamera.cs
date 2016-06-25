@@ -131,18 +131,18 @@ public class VRCamera : MonoBehaviour {
 	bool noGyroscope=false;
 	Quaternion rotation;
 #if UNITY_EDITOR
-	#elif UNITY_IPHONE
+#elif UNITY_IPHONE
 	private float q0,q1,q2,q3;
 	Quaternion rot;
-	#elif UNITY_ANDROID
+#elif UNITY_ANDROID
 	private float meanDeltaGyroY;
-	#elif UNITY_WP8 || UNITY_WP_8_1
+#elif UNITY_WP8 || UNITY_WP_8_1 || UNITY_WSA_10_0
 	private WindowsPhoneVRController.Controller c = null;
-	#endif
+#endif
 
 
 
-	bool initialized=false;
+    bool initialized =false;
 	public void Init()
 	{
 		if( initialized ) return;
@@ -183,7 +183,7 @@ public class VRCamera : MonoBehaviour {
 
 		FibrumController.Init();
 
-		#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
 		gyroBiasArray = new float[128]; for( int k=0; k<gyroBiasArray.Length; k++) gyroBiasArray[k]=0f;
 
 		if( noGyroscope )
@@ -199,20 +199,20 @@ public class VRCamera : MonoBehaviour {
 			EnableCompass(true);
 		}
 
-		#endif
-		
-		#if UNITY_IPHONE
+#endif
+
+#if UNITY_IPHONE
 		//transform.localRotation = Quaternion.Euler(90, 0 ,0);
-		#elif (UNITY_WP8 || UNITY_WP_8_1) && !UNITY_EDITOR
+#elif (UNITY_WP8 || UNITY_WP_8_1 || UNITY_WSA_10_0) && !UNITY_EDITOR
 		Input.gyro.enabled = true; 
 		//transform.localRotation = Quaternion.Euler(90, 0 ,0);
 		c = new WindowsPhoneVRController.Controller();
 		rotation = Quaternion.identity;
 
 
-		#endif
+#endif
 
-		FibrumController.vrCamera = this;
+        FibrumController.vrCamera = this;
 
 		bool noDummyUI=true;
 		Camera[] allCameras = GetComponentsInChildren<Camera>();
@@ -280,22 +280,22 @@ public class VRCamera : MonoBehaviour {
 	{
 		#if UNITY_EDITOR
 		transform.localRotation = Quaternion.Euler(0f, -vrCameraLocal.localEulerAngles.y, 0f);
-		#elif UNITY_IPHONE 
+#elif UNITY_IPHONE
 		transform.localRotation = Quaternion.Euler(0f, -vrCameraLocal.localEulerAngles.y, 0f);
-		#elif UNITY_WP8 || UNITY_WP_8_1 && !UNITY_EDITOR
+#elif UNITY_WP8 || UNITY_WP_8_1 || UNITY_WSA_10_0 && !UNITY_EDITOR
 		transform.localRotation = Quaternion.Euler(0f, -vrCameraLocal.localEulerAngles.y, 0f);
 		Vector3 gravity = Input.acceleration;
 		float fi   = Mathf.Rad2Deg*Mathf.Atan(-gravity.z/(Mathf.Sign(gravity.y)*Mathf.Sqrt(gravity.y*gravity.y+gravity.x*gravity.x*0.01f)));
 		float teta = Mathf.Rad2Deg*Mathf.Atan(-gravity.x/(Mathf.Sqrt(gravity.z*gravity.z+gravity.y*gravity.y)));
 		rotation = Quaternion.Euler(-fi,0f,teta);
-		#elif !UNITY_IPHONE && !(UNITY_WP8 || UNITY_WP_8_1)
+#elif !UNITY_IPHONE && !(UNITY_WP8 || UNITY_WP_8_1 || UNITY_WSA_10_0)
 		transform.localRotation = Quaternion.Euler(0f, -vrCameraLocal.localEulerAngles.y, 0f);
-		#else
+#else
 		transform.localRotation = Quaternion.Euler(0f, -vrCameraLocal.localEulerAngles.y, 0f);
-		#endif
-	}
-	
-	void LateUpdate () {
+#endif
+    }
+
+    void LateUpdate () {
 		
 		
 		#if UNITY_EDITOR || UNITY_STANDALONE
@@ -364,7 +364,7 @@ public class VRCamera : MonoBehaviour {
 #elif UNITY_IPHONE
 		rot = ConvertRotation(Input.gyro.attitude);
 		vrCameraLocal.localRotation = Quaternion.Euler(90f,0f,0f)*rot;
-#elif UNITY_WP8 || UNITY_WP_8_1
+#elif UNITY_WP8 || UNITY_WP_8_1 || UNITY_WSA_10_0
 		//rot = ConvertRotation(Input.gyro.attitude);
 		//vrCameraLocal.localRotation = rot;
 		//print (vrCameraLocal.localRotation.eulerAngles);
@@ -427,9 +427,9 @@ public class VRCamera : MonoBehaviour {
 		#endif
 		//GUI.Box (new Rect (0f, 0f, Screen.width, 30f), "r=" + vrCameraLocal.localRotation.eulerAngles+"  a="+Input.acceleration);
 	}
-	
-	#if UNITY_IPHONE || UNITY_WP8
-	private static Quaternion ConvertRotation(Quaternion q)
+
+#if UNITY_IPHONE || UNITY_WP8 || UNITY_WSA_10_0
+    private static Quaternion ConvertRotation(Quaternion q)
 	{
 		return new Quaternion(q.x, q.y, -q.z, -q.w);
 	}
